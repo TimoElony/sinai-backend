@@ -46,7 +46,7 @@ app.get("/climbingroutes", async (req,res) => {
 app.get("/climbingareas", async (req, res) => {
     try {
         const currentAreas = await pool.query(
-            "SELECT id, name FROM climbing_areas GROUP BY name"
+            "SELECT id, name, access, description FROM climbing_areas GROUP BY name, id, access, description ORDER BY name"
         );
         
         await res.json(currentAreas.rows)
