@@ -42,6 +42,54 @@ app.get("/climbingroutes", async (req,res) => {
 
 });
 
+//get all climbing areas
+app.get("/climbingareas", async (req, res) => {
+    try {
+        const currentAreas = await pool.query(
+            "SELECT id, name FROM climbing_areas GROUP BY name"
+        );
+        
+        await res.json(currentAreas.rows)
+        console.log(currentAreas.rows)
+    } catch (error) {
+        console.error(error.message)
+    }
+});
+
+//get all details for one area where area is equal to selected area
+app.get("/climbingareas/details/:area", async (req,res) => {
+    try {
+        const { area } = req.params;
+        const allDetails = await pool.query(
+            "SELECT id, name, description, access, access_from_dahab_minutes , number_of_routes FROM climbing_areas WHERE name = $1 LIMIT 20", 
+            [area]
+        );
+
+        await res.json(allDetails.rows);
+        console.log(allDetails.rows);
+    } catch (error) {
+        console.error(error.message);
+    }
+
+});
+
+//get all routes where area is equal to selected area
+app.get("/climbingroutes/:area", async (req,res) => {
+    try {
+        const { area } = req.params;
+        const allRoutes = await pool.query(
+            "SELECT id, name, grade_best_guess, length FROM climbing_routes WHERE climbing_area = $1 LIMIT 20", 
+            [area]
+        );
+
+        await res.json(allRoutes.rows);
+        console.log(allRoutes.rows);
+    } catch (error) {
+        console.error(error.message);
+    }
+
+});
+
 //get one climbing route
 
 app.get("/climbingroutes/:id", async (req,res) => {
