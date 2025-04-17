@@ -9,20 +9,7 @@ app.use(express.json()); // gives access to req.body
 
 // Routes
 
-//create new Route
-app.post('/newroute', async(req,res) => {
-    try {
-        const { name, grade, length, info } = req.body;
-        const newRoute = await pool.query(
-            "INSERT INTO newRoute (name, grade, length, info) VALUES($1, $2, $3, $4) RETURNING *", 
-            [name, grade, length, info]
-        );
 
-        res.json(newRoute.rows);
-    } catch (error) {
-        console.error(error.message);
-    }
-});
 
 
 //get all climbing routes for one area
@@ -46,7 +33,7 @@ app.get("/climbingroutes", async (req,res) => {
 app.get("/climbingareas", async (req, res) => {
     try {
         const currentAreas = await pool.query(
-            "SELECT id, name, access, description FROM climbing_areas GROUP BY name, id, access, description ORDER BY name"
+            "SELECT id, name, access, description, access_from_dahab_minutes, number_of_routes FROM climbing_areas"
         );
         
         await res.json(currentAreas.rows)
@@ -60,12 +47,12 @@ app.get("/climbingareas", async (req, res) => {
 app.get("/climbingareas/details/:area", async (req,res) => {
     try {
         const { area } = req.params;
-        const allDetails = await pool.query(
-            "SELECT id, name, description, access, access_from_dahab_minutes , number_of_routes FROM climbing_areas WHERE name = $1 LIMIT 20", 
+        const routeDetails = await pool.query(
+            "SELECT COUNT(*) AS route_count FROM climbing_routes WHERE climbing_area = $1", 
             [area]
         );
 
-        await res.json(allDetails.rows);
+        await res.json(routeDetails.row[0]);
         console.log(allDetails.rows);
     } catch (error) {
         console.error(error.message);
@@ -91,7 +78,6 @@ app.get("/climbingroutes/:area", async (req,res) => {
 });
 
 //get one climbing route
-
 app.get("/climbingroutes/:id", async (req,res) => {
     try {
         const { id } = req.params;
@@ -106,8 +92,22 @@ app.get("/climbingroutes/:id", async (req,res) => {
     }
 });
 
-//update a new Route
+//create new Route
+app.post('/newroute', async(req,res) => {
+    try {
+        const { name, grade, length, info } = req.body;
+        const newRoute = await pool.query(
+            "INSERT INTO newRoute (name, grade, length, info) VALUES($1, $2, $3, $4) RETURNING *", 
+            [name, grade, length, info]
+        );
 
+        res.json(newRoute.rows);
+    } catch (error) {
+        console.error(error.message);
+    }
+});
+
+//update a new Route
 app.put("/newroute/:id", async (req, res) => {
     try {
         const { name, grade, length, info } = req.body;
