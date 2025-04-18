@@ -33,7 +33,7 @@ app.get("/climbingroutes", async (req,res) => {
 app.get("/climbingareas", async (req, res) => {
     try {
         const currentAreas = await pool.query(
-            "SELECT id, name, access, description, access_from_dahab_minutes, number_of_routes FROM climbing_areas"
+            "SELECT id, name, access, description, access_from_dahab_minutes, route_count FROM climbing_areas"
         );
         
         await res.json(currentAreas.rows)
@@ -47,13 +47,12 @@ app.get("/climbingareas", async (req, res) => {
 app.get("/climbingareas/details/:area", async (req,res) => {
     try {
         const { area } = req.params;
-        const routeDetails = await pool.query(
-            "SELECT COUNT(*) AS route_count FROM climbing_routes WHERE climbing_area = $1", 
+        const routeDistro = await pool.query(
+            "SELECT grade_best_guess, COUNT(*) as route_count FROM climbing_routes  WHERE climbing_area = $1 GROUP BY grade_best_guess ORDER BY grade_best_guess", 
             [area]
         );
-
-        await res.json(routeDetails.row[0]);
-        console.log(allDetails.rows);
+        console.log(routeDistro.rows);
+        await res.json(routeDistro.rows);
     } catch (error) {
         console.error(error.message);
     }
