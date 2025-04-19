@@ -3,14 +3,21 @@ const router = express.Router();
 const pool = require('../db');
 
 //get all routes where area is equal to selected area
-router.get("/:area", async (req,res) => {
+router.get("/:area/:crag", async (req,res) => {
     try {
-        const { area } = req.params;
-        const allRoutes = await pool.query(
-            "SELECT id, name, grade_best_guess, length FROM climbing_routes WHERE climbing_area = $1 LIMIT 20", 
-            [area]
+        const { area, crag } = req.params;
+        let allRoutes;
+        if (crag === 'none') {
+            allRoutes = await pool.query(
+                "SELECT id, name, grade_best_guess, length FROM climbing_routes WHERE climbing_area = $1 ORDER BY grade_best_guess", 
+                [area]
+            );
+        } else {
+        allRoutes = await pool.query(
+            "SELECT id, name, grade_best_guess, length FROM climbing_routes WHERE climbing_area = $1 AND climbing_sector = $2 ORDER BY grade_best_guess", 
+            [area, crag]
         );
-
+        }
         await res.json(allRoutes.rows);
         console.log(allRoutes.rows);
     } catch (error) {

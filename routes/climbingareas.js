@@ -19,13 +19,17 @@ router.get("/", async (req, res) => {
 //get all details not included above for one area where area is equal to selected area
 router.get("/details/:area", async (req,res) => {
     try {
-        const { area } = req.params;
+        const { area, crag } = req.params;
         const routeDistro = await pool.query(
             "SELECT grade_best_guess, COUNT(*) as route_count FROM climbing_routes  WHERE climbing_area = $1 GROUP BY grade_best_guess ORDER BY grade_best_guess", 
             [area]
         );
+        const crags = await pool.query(
+            "SELECT name FROM climbing_crags WHERE climbing_area = $1 GROUP BY name", 
+            [area]
+        );
         console.log(routeDistro.rows);
-        const output = bucketGrades(routeDistro.rows);
+        const output = {grade_distribution: bucketGrades(routeDistro.rows), crags: crags.rows};
         console.log(output);
         await res.json(output);
     } catch (error) {
