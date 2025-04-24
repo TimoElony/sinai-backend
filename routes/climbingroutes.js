@@ -7,7 +7,7 @@ router.get("/:area/:crag", async (req,res) => {
     try {
         const { area, crag } = req.params;
         let allRoutes;
-        if (crag === 'none') {
+        if (crag === 'singlecrag') {
             allRoutes = await pool.query(
                 "SELECT id, name, grade_best_guess, length FROM climbing_routes WHERE climbing_area = $1 ORDER BY grade_best_guess", 
                 [area]
@@ -23,7 +23,6 @@ router.get("/:area/:crag", async (req,res) => {
     } catch (error) {
         console.error(error.message);
     }
-
 });
 
 //get one climbing route
