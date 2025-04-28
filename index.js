@@ -6,6 +6,7 @@ const climbingroutes = require('./routes/climbingroutes');
 const climbingareas = require('./routes/climbingareas');
 const newroute = require('./routes/newroute');
 const port = process.env.PORT || 5000;
+const verifySupabaseToken = require('./middleware/auth');
 
 // Middleware
 app.use(cors());
@@ -16,6 +17,10 @@ app.use(express.json()); // gives access to req.body
 app.use('/climbingroutes',climbingroutes);
 app.use('/climbingareas',climbingareas);
 app.use('/newroute',newroute);
+
+app.get('/protected', verifySupabaseToken, (req, res) => {
+  res.json({message: 'secure data', user: req.user});
+})
 
 
 
