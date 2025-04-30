@@ -8,9 +8,15 @@ const newroute = require('./routes/newroute');
 const authRoutes = require('./routes/authRoutes');
 const port = process.env.PORT || 5000;
 const verifySupabaseToken = require('./middleware/auth');
+const corsOptions = {
+  origin: 'http://localhost:5173', // Your frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
+  credentials: true, // Allow cookies (if needed)
+};
+
 
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json()); // gives access to req.body
 
 //auth

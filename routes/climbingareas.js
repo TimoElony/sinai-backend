@@ -6,7 +6,7 @@ const pool = require('../db');
 router.get("/", async (req, res) => {
     try {
         const currentAreas = await pool.query(
-            "SELECT id, name, access, description, access_from_dahab_minutes, route_count FROM climbing_areas"
+            "SELECT id, name, access, description, access_from_dahab_minutes, route_count FROM climbing_areas ORDER BY route_count DESC"
         );
         
         await res.json(currentAreas.rows)
