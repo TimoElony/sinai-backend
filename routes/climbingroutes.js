@@ -44,10 +44,10 @@ router.get("/:name", verifySupabaseToken, async (req,res) => {
 //add one climbing route
 router.post("/new", verifySupabaseToken, async (req,res) => {
     try {
-        const {name, grade, bolts, length, info } = req.body;
+        const {name, grade, bolts, length, info, area } = req.body;
         const newRoute = await pool.query(
-            "INSERT INTO climbing_routes (name, fa_grade, bolts, length, plain_description) VALUES ($1, $2, $3, $4, $5) RETURNING name, id",
-            [name, grade, bolts, length, info]
+            "INSERT INTO climbing_routes (name, fa_grade, bolts, length, plain_description, climbing_area) VALUES ($1, $2, $3, $4, $5, $6) RETURNING name, id",
+            [name, grade, bolts, length, info, area]
         );
 
         res.json(newRoute.rows);
