@@ -10,12 +10,12 @@ router.get("/:area/:crag", async (req,res) => {
         let allRoutes;
         if (crag === 'singlecrag') {
             allRoutes = await pool.query(
-                "SELECT id, name, grade_best_guess, length FROM climbing_routes WHERE climbing_area = $1 ORDER BY grade_best_guess", 
+                "SELECT id, name, grade_best_guess, length FROM climbing_routes WHERE climbing_area = $1 ORDER BY edited_at", 
                 [area]
             );
         } else {
         allRoutes = await pool.query(
-            "SELECT id, name, grade_best_guess, length FROM climbing_routes WHERE climbing_area = $1 AND climbing_sector = $2 ORDER BY grade_best_guess", 
+            "SELECT id, name, grade_best_guess, length FROM climbing_routes WHERE climbing_area = $1 AND climbing_sector = $2 ORDER BY edited_at", 
             [area, crag]
         );
         }
@@ -44,10 +44,10 @@ router.get("/:name", verifySupabaseToken, async (req,res) => {
 //add one climbing route
 router.post("/new", verifySupabaseToken, async (req,res) => {
     try {
-        const {name, grade, bolts, length, info, area, crag } = req.body;
+        const {name, grade, bolts, length, info, area, crag, setters } = req.body;
         const newRoute = await pool.query(
-            "INSERT INTO climbing_routes (name, fa_grade, bolts, length, plain_description, climbing_area, climbing_sector) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING name, id",
-            [name, grade, bolts, length, info, area, crag]
+            "INSERT INTO climbing_routes (name, fa_grade, bolts, length, plain_description, climbing_area, climbing_sector, setters) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING name, id",
+            [name, grade, bolts, length, info, area, crag, setters]
         );
 
         res.json(newRoute.rows);
