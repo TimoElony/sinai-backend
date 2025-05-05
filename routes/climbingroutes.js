@@ -10,12 +10,12 @@ router.get("/:area/:crag", async (req,res) => {
         let allRoutes;
         if (crag === 'singlecrag') {
             allRoutes = await pool.query(
-                "SELECT id, name, grade_best_guess, length FROM climbing_routes WHERE climbing_area = $1 ORDER BY updated_at", 
+                "SELECT id, name, grade_best_guess, length FROM climbing_routes WHERE climbing_area = $1 ORDER BY updated_at DESC", 
                 [area]
             );
         } else {
         allRoutes = await pool.query(
-            "SELECT id, name, grade_best_guess, length FROM climbing_routes WHERE climbing_area = $1 AND climbing_sector = $2 ORDER BY updated_at", 
+            "SELECT id, name, grade_best_guess, length FROM climbing_routes WHERE climbing_area = $1 AND climbing_sector = $2 ORDER BY updated_at DESC", 
             [area, crag]
         );
         }
