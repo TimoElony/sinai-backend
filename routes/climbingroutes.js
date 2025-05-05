@@ -46,8 +46,8 @@ router.post("/new", verifySupabaseToken, async (req,res) => {
     try {
         const {name, grade, bolts, length, info, area, crag, setters } = req.body;
         const newRoute = await pool.query(
-            "INSERT INTO climbing_routes (name, fa_grade, bolts, length, plain_description, climbing_area, climbing_sector, setters, grade_best_guess) VALUES ($1, $2, $3, $4, $5, $6, $7, $2) RETURNING name, id",
-            [name, grade, bolts, length, info, area, crag, setters]
+            "INSERT INTO climbing_routes (name, fa_grade, bolts, length, plain_description, climbing_area, climbing_sector, setters, grade_best_guess) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING name, id",
+            [name, grade, bolts, length, info, area, crag, setters, grade]
         );
 
         res.json(newRoute.rows);
