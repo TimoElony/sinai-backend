@@ -5,6 +5,7 @@ const pool = require('./db');
 const climbingroutes = require('./routes/climbingroutes');
 const climbingareas = require('./routes/climbingareas');
 const newroute = require('./routes/newroute');
+const walltopos = require('./routes/walltopos')
 const authRoutes = require('./routes/authRoutes');
 const port = process.env.PORT || 5000;
 const verifySupabaseToken = require('./middleware/auth');
@@ -26,6 +27,8 @@ app.use('/auth', authRoutes)
 app.use('/climbingroutes',climbingroutes);
 app.use('/climbingareas',climbingareas);
 app.use('/newroute',newroute);
+
+app.use('/walltopos', walltopos);
 
 //Routes protected by authentication
 app.get('/protected', verifySupabaseToken, (req, res) => {
