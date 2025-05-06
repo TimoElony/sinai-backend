@@ -9,7 +9,7 @@ const authRoutes = require('./routes/authRoutes');
 const port = process.env.PORT || 5000;
 const verifySupabaseToken = require('./middleware/auth');
 const corsOptions = {
-  origin: ['http://localhost:5173', 'sinai-app.vercel.app'], // Your frontend URL
+  origin: ['http://localhost:5173', 'https://sinai-app.vercel.app'], // Your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
   credentials: true, // Allow cookies (if needed)
 };
