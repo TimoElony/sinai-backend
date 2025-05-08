@@ -70,4 +70,33 @@ router.put("/:id", verifySupabaseToken, async(req, res) => {
     }
 })
 
+router.post("/addToTopo", verifySupabaseToken, async(req,res) => {
+    try {
+        const { id, wall_topo_ids, wall_topo_numbers } = req.body;
+        if (wall_topo_ids.length !== wall_topo_numbers.length) {
+            return res.status(400).json({ error: "Array length mismatch" });
+        }
+        const updatedRoute = pool.query(
+            "UPDATE climbing_routes SET wall_topo_ids = $1, wall_topo_numbers = $2 WHERE id = $3;",
+            [wall_topo_ids, wall_topo_numbers, id]
+        )
+        res.json(updatedRoute.rows);
+    } catch (error) {
+        console.error('error adding route to topo')
+    }
+})
+
+router.put("/updateTopoNumber", verifySupabaseToken, async(req,res) => {
+    try {
+        const { id, wall_topo_numbers } = req.body;
+        const updatedRoute = pool.query(
+            "UPDATE climbing_routes SET wall_topo_numbers = $1 WHERE id = $2;",
+            [wall_topo_numbers, id]
+        )
+        res.json(updatedRoute.rows);
+    } catch (error) {
+        console.error('error changing topo numbers')
+    }
+})
+
 module.exports = router;
