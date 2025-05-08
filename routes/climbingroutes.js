@@ -25,21 +25,6 @@ router.get("/:area/:crag", async (req,res) => {
     }
 });
 
-//get one climbing route, admin function
-router.get("/:name", verifySupabaseToken, async (req,res) => {
-    try {
-        const { name } = req.params;
-        const route = await pool.query(
-            "SELECT * FROM climbing_routes WHERE name = $1",
-            [name]
-        );
-
-        res.json(route.rows);
-    } catch (error) {
-        console.error(error.message);
-    }
-});
-
 //add one climbing route
 router.post("/new", verifySupabaseToken, async (req,res) => {
     try {
@@ -54,21 +39,6 @@ router.post("/new", verifySupabaseToken, async (req,res) => {
         console.error(error.message);
     }
 });
-
-router.put("/:id", verifySupabaseToken, async(req, res) => {
-    try {
-        const {name, grade, bolts, length, info } = req.body;
-        const {id} = req.params;
-        const updatedRoute = await pool.query(
-            "UPDATE climbing_routes SET name = $1, fa_grade = $2, bolts =$3, length = $4, plain_description = $5 WHERE id = $6 RETURNING name, id",
-            [name, grade, bolts, length, info, id]
-        );
-
-        res.json(updatedRoute.rows)
-    } catch (error) {
-        console.error(error.message);
-    }
-})
 
 router.post("/addToTopo", verifySupabaseToken, async(req,res) => {
     try {
