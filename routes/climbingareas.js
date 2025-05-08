@@ -9,8 +9,7 @@ router.get("/", async (req, res) => {
             "SELECT id, name, access, description, access_from_dahab_minutes, route_count FROM climbing_areas ORDER BY route_count DESC"
         );
         
-        await res.json(currentAreas.rows)
-        console.log(currentAreas.rows)
+        res.json(currentAreas.rows)
     } catch (error) {
         console.error(error.message)
     }
@@ -30,8 +29,7 @@ router.get("/details/:area", async (req,res) => {
         );
         console.log(routeDistro.rows);
         const output = {grade_distribution: bucketGrades(routeDistro.rows), crags: crags.rows};
-        console.log(output);
-        await res.json(output);
+        res.json(output);
     } catch (error) {
         console.error(error.message);
     }
