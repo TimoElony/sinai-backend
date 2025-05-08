@@ -59,7 +59,7 @@ router.put("/:id", verifySupabaseToken, async(req, res) => {
     try {
         const {name, grade, bolts, length, info } = req.body;
         const {id} = req.params;
-        const updatedRoute = pool.query(
+        const updatedRoute = await pool.query(
             "UPDATE climbing_routes SET name = $1, fa_grade = $2, bolts =$3, length = $4, plain_description = $5 WHERE id = $6 RETURNING name, id",
             [name, grade, bolts, length, info, id]
         );
@@ -73,10 +73,11 @@ router.put("/:id", verifySupabaseToken, async(req, res) => {
 router.post("/addToTopo", verifySupabaseToken, async(req,res) => {
     try {
         const { id, wall_topo_ids, wall_topo_numbers } = req.body;
+        console.log(id, wall_topo_ids, wall_topo_numbers);
         if (wall_topo_ids.length !== wall_topo_numbers.length) {
             return res.status(400).json({ error: "Array length mismatch" });
         }
-        const updatedRoute = pool.query(
+        const updatedRoute = await pool.query(
             "UPDATE climbing_routes SET wall_topo_ids = $1, wall_topo_numbers = $2 WHERE id = $3;",
             [wall_topo_ids, wall_topo_numbers, id]
         )
@@ -89,7 +90,7 @@ router.post("/addToTopo", verifySupabaseToken, async(req,res) => {
 router.put("/updateTopoNumber", verifySupabaseToken, async(req,res) => {
     try {
         const { id, wall_topo_numbers } = req.body;
-        const updatedRoute = pool.query(
+        const updatedRoute = await pool.query(
             "UPDATE climbing_routes SET wall_topo_numbers = $1 WHERE id = $2;",
             [wall_topo_numbers, id]
         )
