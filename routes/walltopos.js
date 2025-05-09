@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+import verifySupabaseToken from '../middleware/auth';
 
 router.get('/:area/:crag', async (req,res) => {
     try {
@@ -17,15 +18,27 @@ router.get('/:area/:crag', async (req,res) => {
 router.post('/:area/:crag', async (req, res) => {
     try {
         const { area, crag } = req.params;
-        const { title, description, image } = req.body;
+        const { title, description, name } = req.body;
         console.log(title);
         const newTopo = await pool.query(
             "INSERT INTO wall_topos (description, details, extracted_filename, climbing_area_name, climbing_sector) VALUES ($1, $2, $3, $4, $5)",
-            [title, description, image.name, area, crag]
+            [title, description, name, area, crag]
         )
         res.json(newTopo.rows);
     } catch (error) {
         console.error("error while posting new topo", error.message)
+    }
+})
+
+router.post('/verify', verifySupabaseToken, async (req, res) => {
+    try {
+        res.json({ 
+         ok: true,
+        userId: req.user.id
+        });
+    } catch (error) {
+        console.error("validation endpoint error", error.message);
+        res.status(500).json({ ok: false, error: 'Internal server error' });
     }
 })
 
