@@ -31,10 +31,11 @@ router.post('/:area/:crag', async (req, res) => {
 })
 
 router.post('/verify', verifySupabaseToken, async (req, res) => {
+    console.log("verifying");
     try {
         res.json({ 
          ok: true,
-        userId: req.user.id
+         userId: req.user.id
         });
     } catch (error) {
         console.error("validation endpoint error", error.message);
