@@ -62,12 +62,12 @@ router.put("/updateTopoNumber", verifySupabaseToken, async(req,res) => {
         const { id, wall_topo_ids, wall_topo_numbers } = req.body;
         console.log(wall_topo_ids);
         const updatedRoute = await pool.query(
-            "UPDATE climbing_routes SET wall_topo_ids = $1 wall_topo_numbers = $2 WHERE id = $3;",
+            "UPDATE climbing_routes SET wall_topo_ids = $1, wall_topo_numbers = $2 WHERE id = $3;",
             [wall_topo_ids, wall_topo_numbers, id]
         )
         res.json(updatedRoute.rows);
     } catch (error) {
-        console.error('error changing topo numbers')
+        console.error('error changing topo numbers', error.message)
     }
 })
 
