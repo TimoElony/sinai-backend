@@ -20,7 +20,7 @@ router.post('/:area/:crag', async (req, res) => {
         const { title, description, image } = req.body;
         console.log(title);
         const newTopo = await pool.query(
-            "INSERT INTO wall_topos (description, details, extracted_filename, climbing_area_name, climbing_sector) VALUES ($1, $2, $3, $4, $5) RETURNING COUNT(*)",
+            "INSERT INTO wall_topos (description, details, extracted_filename, climbing_area_name, climbing_sector) VALUES ($1, $2, $3, $4, $5) RETURNING *",
             [title, description, image.name, area, crag]
         )
         res.json(newTopo);
