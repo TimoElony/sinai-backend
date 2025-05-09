@@ -14,4 +14,20 @@ router.get('/:area/:crag', async (req,res) => {
     }
 })
 
+router.post('/:area/:crag', async (req, res) => {
+    try {
+        const { area, crag } = req.params;
+        const { title, description, image } = req.body;
+        console.log(title);
+        const newTopo = await pool.query(
+            "INSERT INTO wall_topos (description, details, extracted_filename, climbing_area_name, climbing_sector) VALUES ($1, $2, $3, $4, $5) RETURNING COUNT(*)",
+            [title, description, image.name, area, crag]
+        )
+        res.json(newTopo);
+        console.log(newTopo);
+    } catch (error) {
+        console.error("error while posting new topo", error.message)
+    }
+})
+
 module.exports = router;
