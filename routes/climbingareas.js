@@ -27,7 +27,6 @@ router.get("/details/:area", async (req,res) => {
             "SELECT name FROM climbing_crags WHERE climbing_area = $1 GROUP BY name", 
             [area]
         );
-        console.log(routeDistro.rows);
         const output = {grade_distribution: bucketGrades(routeDistro.rows), crags: crags.rows};
         res.json(output);
     } catch (error) {
