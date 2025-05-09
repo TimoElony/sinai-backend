@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-import verifySupabaseToken from '../middleware/auth';
+const verifySupabaseToken = require('../middleware/auth');
 
 router.get('/:area/:crag', async (req,res) => {
     try {
