@@ -20,7 +20,7 @@ router.get('/:area/:crag', async (req,res) => {
         res.json(relevantTopos.rows);
         }
     } catch (error) {
-        console.error('couldnt query on get walltopos')
+        console.error('couldnt query on get walltopos', error.message)
     }
 })
 
