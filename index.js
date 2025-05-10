@@ -19,6 +19,7 @@ const corsOptions = {
 // Middleware
 app.use(cors(corsOptions));
 app.use(express.json()); // gives access to req.body
+app.use(express.urlencoded({ extended: true }));
 
 //auth
 app.use('/auth', authRoutes)
