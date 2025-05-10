@@ -9,12 +9,12 @@ router.get('/:area/:crag', async (req,res) => {
         let relevantTopos;
         if (area === crag) {
             relevantTopos = await pool.query(
-                "SELECT id, name, description, details, extracted_filename, climbing_routes_ids, climbing_area_name, climbing_sector FROM wall_topos WHERE climbing_area = $1 ORDER BY updated_at DESC", 
+                "SELECT id, name, description, details, extracted_filename, climbing_routes_ids, climbing_area_name, climbing_sector FROM wall_topos WHERE climbing_area_name = $1 ORDER BY updated_at DESC", 
                 [area]
             );
         console.log('topos queried', relevantTopos)
         } else {
-        relevantTopos = await pool.query("SELECT id, name, description, details, extracted_filename, climbing_routes_ids, climbing_area_name, climbing_sector FROM wall_topos WHERE climbing_area_name = $1 AND climbing_sector = $2 ORDER BY updated_at",
+        relevantTopos = await pool.query("SELECT id, name, description, details, extracted_filename, climbing_routes_ids, climbing_area_name, climbing_sector FROM wall_topos WHERE climbing_area_name = $1 AND climbing_sector = $2 ORDER BY updated_at DESC",
             [area, crag]
         );
         res.json(relevantTopos.rows);
