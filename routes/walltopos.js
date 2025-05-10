@@ -7,7 +7,7 @@ router.get('/:area/:crag', async (req,res) => {
     try {
         const { area, crag } = req.params;
         let relevantTopos;
-        if (crag === 'singlecrag') {
+        if (area === crag) {
             relevantTopos = await pool.query(
                 "SELECT id, name, description, details, extracted_filename, climbing_routes_ids, climbing_area_name, climbing_sector FROM wall_topos WHERE climbing_area = $1 ORDER BY updated_at DESC", 
                 [area]
