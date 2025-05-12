@@ -24,7 +24,7 @@ router.get("/details/:area", async (req,res) => {
             [area]
         );
         const crags = await pool.query(
-            "SELECT name FROM climbing_crags WHERE climbing_area = $1 GROUP BY name ORDER BY updated_at DESC", 
+            "SELECT name FROM climbing_crags WHERE climbing_area = $1 ORDER BY updated_at DESC", 
             [area]
         );
         const output = {grade_distribution: bucketGrades(routeDistro.rows), crags: crags.rows};
