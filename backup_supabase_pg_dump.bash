@@ -1,0 +1,1 @@
+pg_dump -h aws-0-eu-central-1.pooler.supabase.com -p 5432 -U postgres.vwpzcvemysspydbtlcxo -d postgres -Fc -f supabase_backup.dump

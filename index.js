@@ -4,7 +4,6 @@ const cors = require('cors');
 const pool = require('./db');
 const climbingroutes = require('./routes/climbingroutes');
 const climbingareas = require('./routes/climbingareas');
-const newroute = require('./routes/newroute');
 const walltopos = require('./routes/walltopos');
 const geodata = require('./routes/geodata');
 const authRoutes = require('./routes/authRoutes');
@@ -28,7 +27,6 @@ app.use('/auth', authRoutes)
 // Routes
 app.use('/climbingroutes',climbingroutes);
 app.use('/climbingareas',climbingareas);
-app.use('/newroute',newroute);
 app.use('/geodata', geodata);
 
 app.use('/walltopos', walltopos);
