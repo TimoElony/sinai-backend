@@ -27,11 +27,11 @@ router.get('/:area/:crag', async (req,res) => {
 router.post('/:area/:crag', async (req, res) => {
     try {
         const { area, crag } = req.params;
-        const { title, description, name } = req.body;
+        const { title, description, name, longitude, latitude } = req.body;
         console.log(title);
         const newTopo = await pool.query(
-            "INSERT INTO wall_topos (description, details, extracted_filename, climbing_area_name, climbing_sector) VALUES ($1, $2, $3, $4, $5)",
-            [title, description, name, area, crag]
+            "INSERT INTO wall_topos (description, details, extracted_filename, climbing_area_name, climbing_sector, longitude, latitude) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+            [title, description, name, area, crag, longitude, latitude]
         )
         res.json(newTopo.rows);
     } catch (error) {
