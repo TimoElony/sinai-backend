@@ -5,7 +5,10 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 
 const verifySupabaseToken = async (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
-    if(!token) return res.status(401).send('Unauthorized');
+    if(!token) return res.status(401).json({ 
+            error: 'Unauthorized',
+            message: 'No token provided' 
+        });
 
     try {
         const { data: { user }, error } = await supabase.auth.getUser(token);
@@ -14,7 +17,10 @@ const verifySupabaseToken = async (req, res, next) => {
         req.user = user;
         next();
     } catch (error) {
-        res.status(401).send('Invalid token');
+        res.status(401).json({ 
+            error: 'Unauthorized',
+            message: 'invalid token provided' 
+        });
     }
 }
 
