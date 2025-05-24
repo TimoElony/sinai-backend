@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const verifySupabaseToken = require('../middleware/auth');
+const { rewriteFramesIntegration } = require('@sentry/node');
 
 router.get('/:area/:crag', async (req,res) => {
     try {
@@ -50,6 +51,32 @@ router.post('/verify', verifySupabaseToken, async (req, res) => {
         console.error("validation endpoint error", error.message);
         res.status(500).json({ ok: false, error: 'Internal server error' });
     }
+})
+
+router.put('/drawnLine', verifySupabaseToken, async (req, res) => {
+    console.log("adding line points");
+    try {
+        const geoJSONLine = req.body;
+        const { topo_id } = geoJSONLine.properties;
+
+        if (!topo_id || !geoJSONLine?.geometry?.coordinates) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+  
+        await pool.query(
+            "UPDATE wall_topos SET line_segments = COALESCE(line_segments, '{}'::jsonb[]) || $1::jsonb) WHERE id = $2",
+            [geoJSONLine, topo_id]);
+        res.status(200).json({ 
+            success: true,
+            message: "Successfully added line segment"
+        });
+    } catch (error) {
+        console.error("Error appending line segment:", error);
+        res.status(500).json({ 
+            error: "Internal server error",
+            details: error.message 
+        });
+    }   
 })
 
 module.exports = router;
