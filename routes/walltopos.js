@@ -64,7 +64,7 @@ router.put('/drawnLine', verifySupabaseToken, async (req, res) => {
         }
   
         const updateData = await pool.query(
-            "UPDATE wall_topos SET line_segments = COALESCE(line_segments, '{}'::jsonb[]) || $1::jsonb) WHERE id = $2",
+            "UPDATE wall_topos SET line_segments = COALESCE(line_segments, '{}'::jsonb[]) || $1::jsonbs WHERE id = $2",
             [geoJSONLine, topo_id]);
         console.log(updateData.rows);
         res.status(200).json({ 
