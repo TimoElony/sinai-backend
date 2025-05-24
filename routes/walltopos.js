@@ -63,11 +63,12 @@ router.put('/drawnLine', verifySupabaseToken, async (req, res) => {
             return res.status(400).json({ error: "Missing required fields" });
         }
   
-        await pool.query(
+        const updateData = await pool.query(
             "UPDATE wall_topos SET line_segments = COALESCE(line_segments, '{}'::jsonb[]) || $1::jsonb) WHERE id = $2",
             [geoJSONLine, topo_id]);
+        console.log(updateData.rows);
         res.status(200).json({ 
-            success: true,
+            ok: true,
             message: "Successfully added line segment"
         });
     } catch (error) {
