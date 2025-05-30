@@ -63,33 +63,51 @@ router.put('/drawnLine/:lineLabel/:asNew', verifySupabaseToken, async (req, res)
     }
 
     try {
+        // Get the current line segments
         const oldData = await pool.query(
-                "SELECT line_segments FROM wall_topos WHERE id = $1",
-                [topo_id]
+            "SELECT line_segments FROM wall_topos WHERE id = $1",
+            [topo_id]
         );
-        const conflictingLabels = oldData.rows.filter((row)=>(row.properties.line_label === line_label));
-        if (!asNew) {
-            console.log("replacing old JSON: ", oldData);
-            const replacement = oldData.rows.map((row)=>(row.properties.line_label === line_label ? row : geoJSONLine));
-            console.log('with ', replacement)
+        
+        // Current line segments array (or empty array if null)
+        const currentSegments = oldData.rows[0]?.line_segments || [];
+        
+        if (!asNew || asNew === 'false') {
+            // Replace existing segment with same label
+            const updatedSegments = currentSegments.map(segment => 
+                segment.properties?.line_label === line_label ? geoJSONLine : segment
+            );
+            
+            // If no matching segment was found, add the new one
+            if (!currentSegments.some(segment => segment.properties?.line_label === line_label)) {
+                updatedSegments.push(geoJSONLine);
+            }
 
-            const updateData = await pool.query(
+            await pool.query(
                 "UPDATE wall_topos SET line_segments = $1 WHERE id = $2",
-                [replacement, topo_id]
+                [updatedSegments, topo_id]
             );
 
-            console.log(updateData.rows);
             res.status(200).json({ 
-            ok: true,
-            message: "Successfully replaced line segment"
-        });
+                ok: true,
+                message: "Successfully updated line segments"
+            });
         } else {
-            if(conflictingLabels && conflictingLabels.length > 0) throw new Error(`conflicting label at${conflictingLabels.properties.line_label}`);
-            const updateData = await pool.query(
-                "UPDATE wall_topos SET line_segments = COALESCE(line_segments, '{}'::jsonb[]) || $1::jsonb WHERE id = $2",
+            // Check for conflicting labels
+            const hasConflict = currentSegments.some(
+                segment => segment.properties?.line_label === line_label
+            );
+            
+            if (hasConflict) {
+                throw new Error(`Conflicting label: ${line_label}`);
+            }
+            
+            // Add new segment
+            await pool.query(
+                "UPDATE wall_topos SET line_segments = array_append(COALESCE(line_segments, '{}'::jsonb[]), $1::jsonb) WHERE id = $2",
                 [geoJSONLine, topo_id]
             );
-            console.log(updateData.rows);
+            
             res.status(200).json({ 
                 ok: true,
                 message: "Successfully added new line segment"
