@@ -53,26 +53,50 @@ router.post('/verify', verifySupabaseToken, async (req, res) => {
     }
 })
 
-router.put('/drawnLine', verifySupabaseToken, async (req, res) => {
+router.put('/drawnLine/:lineLabel/:asNew', verifySupabaseToken, async (req, res) => {
     console.log("adding line points");
-    try {
-        const geoJSONLine = req.body;
-        const { topo_id } = geoJSONLine.properties;
+    const { asNew, lineLabel } = req.params;
+    const geoJSONLine = req.body;
+    const { topo_id, line_label } = geoJSONLine.properties;
+    if (!topo_id || !geoJSONLine?.geometry?.coordinates) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
 
-        if (!topo_id || !geoJSONLine?.geometry?.coordinates) {
-            return res.status(400).json({ error: "Missing required fields" });
-        }
-  
-        const updateData = await pool.query(
-            "UPDATE wall_topos SET line_segments = COALESCE(line_segments, '{}'::jsonb[]) || $1::jsonb WHERE id = $2",
-            [geoJSONLine, topo_id]);
-        console.log(updateData.rows);
-        res.status(200).json({ 
+    try {
+        const oldData = await pool.query(
+                "SELECT line_segments FROM wall_topos WHERE id = $1",
+                [topo_id]
+        );
+        const conflictingLabels = oldData.rows.filter((row)=>(row.properties.line_label === line_label));
+        if (!asNew) {
+            console.log("replacing old JSON: ", oldData);
+            const replacement = oldData.rows.map((row)=>(row.properties.line_label === line_label ? row : geoJSONLine));
+            console.log('with ', replacement)
+
+            const updateData = await pool.query(
+                "UPDATE wall_topos SET line_segments = $1 WHERE id = $2",
+                [replacement, topo_id]
+            );
+
+            console.log(updateData.rows);
+            res.status(200).json({ 
             ok: true,
-            message: "Successfully added line segment"
+            message: "Successfully replaced line segment"
         });
+        } else {
+            if(conflictingLabels && conflictingLabels.length > 0) throw new Error(`conflicting label at${conflictingLabels.properties.line_label}`);
+            const updateData = await pool.query(
+                "UPDATE wall_topos SET line_segments = COALESCE(line_segments, '{}'::jsonb[]) || $1::jsonb WHERE id = $2",
+                [geoJSONLine, topo_id]
+            );
+            console.log(updateData.rows);
+            res.status(200).json({ 
+                ok: true,
+                message: "Successfully added new line segment"
+            });
+        }
     } catch (error) {
-        console.error("Error appending line segment:", error);
+        console.error("Error submitting or editing line segment:", error);
         res.status(500).json({ 
             error: "Internal server error",
             details: error.message 
