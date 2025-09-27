@@ -35,7 +35,7 @@ router.post("/new", verifySupabaseToken, async (req,res) => {
         );
         const logEntry = await pool.query(
             "INSERT INTO change_logs (user_id, action, route_id) VALUES ($1, $2, $3)",
-            [req.user, 'Created new route', id]
+            [req.user.email, 'Created new route', id]
         );
         res.json(newRoute.rows);
     } catch (error) {
@@ -53,10 +53,9 @@ router.post("/addToTopo", verifySupabaseToken, async(req,res) => {
             "UPDATE climbing_routes SET wall_topo_ids = $1, wall_topo_numbers = $2 WHERE id = $3;",
             [wall_topo_ids, wall_topo_numbers, id]
         )
-        console.log(req.user);
         const logEntry = await pool.query(
             "INSERT INTO change_logs (user_id, action, route_id) VALUES ($1, $2, $3)",
-            [req.user, 'Added route to topo', id]
+            [req.user.email, 'Added route to topo', id]
         );
         res.json(updatedRoute.rows);
     } catch (error) {
@@ -73,7 +72,7 @@ router.put("/updateTopoNumber", verifySupabaseToken, async(req,res) => {
         )
         const logEntry = await pool.query(
             "INSERT INTO change_logs (user_id, action, route_id) VALUES ($1, $2, $3)",
-            [req.user, 'Updated topo number for one of the topos', id]
+            [req.user.email, 'Updated topo number for one of the topos', id]
         );
         res.json(updatedRoute.rows);
     } catch (error) {

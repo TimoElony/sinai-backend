@@ -24,7 +24,7 @@ router.get('/:area/:crag', async (req,res) => {
     }
 })
 
-router.post('/:area/:crag', async (req, res) => {
+router.post('/:area/:crag', verifySupabaseToken, async (req, res) => {
     try {
         const { area, crag } = req.params;
         const { title, description, name, longitude, latitude } = req.body;
@@ -33,6 +33,10 @@ router.post('/:area/:crag', async (req, res) => {
             "INSERT INTO wall_topos (description, details, extracted_filename, climbing_area_name, climbing_sector, longitude, latitude) VALUES ($1, $2, $3, $4, $5, $6, $7)",
             [title, description, name, area, crag, longitude, latitude]
         )
+        const logEntry = await pool.query(
+            "INSERT INTO change_logs (user_id, action, route_id) VALUES ($1, $2, $3)",
+            [req.user.email, 'Created new route', id]
+        );
         res.json(newTopo.rows);
     } catch (error) {
         console.error("error while posting new topo", error.message)
