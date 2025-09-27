@@ -43,7 +43,6 @@ router.post("/new", verifySupabaseToken, async (req,res) => {
 router.post("/addToTopo", verifySupabaseToken, async(req,res) => {
     try {
         const { id, wall_topo_ids, wall_topo_numbers } = req.body;
-        console.log(id, wall_topo_ids, wall_topo_numbers);
         if (wall_topo_ids.length !== wall_topo_numbers.length) {
             return res.status(400).json({ error: "Array length mismatch" });
         }
@@ -62,7 +61,6 @@ router.put("/updateTopoNumber", verifySupabaseToken, async(req,res) => {
         const { id, wall_topo_ids, wall_topo_numbers } = req.body;
         const user = req.headers;
         console.log(user);
-        console.log(wall_topo_ids);
         const updatedRoute = await pool.query(
             "UPDATE climbing_routes SET wall_topo_ids = $1, wall_topo_numbers = $2 WHERE id = $3;",
             [wall_topo_ids, wall_topo_numbers, id]
