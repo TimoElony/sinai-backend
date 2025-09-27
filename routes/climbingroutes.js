@@ -30,10 +30,13 @@ router.post("/new", verifySupabaseToken, async (req,res) => {
     try {
         const {name, grade, bolts, length, info, area, crag, setters } = req.body;
         const newRoute = await pool.query(
-            "INSERT INTO climbing_routes (name, fa_grade, bolts, length, plain_description, climbing_area, climbing_sector, setters, grade_best_guess) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING name, id",
-            [name, grade, bolts, length, info, area, crag, setters, grade]
+            "INSERT INTO climbing_routes (name, fa_grade, bolts, length, plain_description, climbing_area, climbing_sector, setters, grade_best_guess, sources) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING name, id",
+            [name, grade, bolts, length, info, area, crag, setters, grade, req.user.id]
         );
-
+        const logEntry = await pool.query(
+            "INSERT INTO change_logs (user_id, action, route_id) VALUES ($1, $2, $3)",
+            [req.user, 'Created new route', id]
+        );
         res.json(newRoute.rows);
     } catch (error) {
         console.error(error.message);
@@ -50,6 +53,11 @@ router.post("/addToTopo", verifySupabaseToken, async(req,res) => {
             "UPDATE climbing_routes SET wall_topo_ids = $1, wall_topo_numbers = $2 WHERE id = $3;",
             [wall_topo_ids, wall_topo_numbers, id]
         )
+        console.log(req.user);
+        const logEntry = await pool.query(
+            "INSERT INTO change_logs (user_id, action, route_id) VALUES ($1, $2, $3)",
+            [req.user, 'Added route to topo', id]
+        );
         res.json(updatedRoute.rows);
     } catch (error) {
         console.error('error adding route to topo')
@@ -59,12 +67,14 @@ router.post("/addToTopo", verifySupabaseToken, async(req,res) => {
 router.put("/updateTopoNumber", verifySupabaseToken, async(req,res) => {
     try {
         const { id, wall_topo_ids, wall_topo_numbers } = req.body;
-        const user = req.headers;
-        console.log(user);
         const updatedRoute = await pool.query(
             "UPDATE climbing_routes SET wall_topo_ids = $1, wall_topo_numbers = $2 WHERE id = $3;",
             [wall_topo_ids, wall_topo_numbers, id]
         )
+        const logEntry = await pool.query(
+            "INSERT INTO change_logs (user_id, action, route_id) VALUES ($1, $2, $3)",
+            [req.user, 'Updated topo number for one of the topos', id]
+        );
         res.json(updatedRoute.rows);
     } catch (error) {
         console.error('error changing topo numbers', error.message)
