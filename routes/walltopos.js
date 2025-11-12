@@ -34,8 +34,8 @@ router.post('/:area/:crag', verifySupabaseToken, async (req, res) => {
             [title, description, name, area, crag, longitude, latitude]
         )
         const logEntry = await pool.query(
-            "INSERT INTO change_logs (user_id, action, route_id) VALUES ($1, $2, $3)",
-            [req.user.email, 'Created new topo', title]
+            "INSERT INTO change_logs (user_id, action) VALUES ($1, $2)",
+            [req.user.email, 'Created new topo']
         );
         res.json(newTopo.rows);
     } catch (error) {
