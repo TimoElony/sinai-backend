@@ -33,10 +33,10 @@ router.post("/new", verifySupabaseToken, async (req,res) => {
             "INSERT INTO climbing_routes (name, fa_grade, bolts, length, plain_description, climbing_area, climbing_sector, setters, grade_best_guess, sources) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING name, id",
             [name, grade, bolts, length, info, area, crag, setters, grade, req.user.id]
         );
-        const logEntry = await pool.query(
-            "INSERT INTO change_logs (user_id, action) VALUES ($1, $2)",
-            [req.user.email, 'Created new route'+name]
-        );
+        // const logEntry = await pool.query(
+        //     "INSERT INTO change_logs (user_id, action) VALUES ($1, $2)",
+        //     [req.user.email, 'Created new route'+name]
+        // );
         res.json(newRoute.rows);
     } catch (error) {
         console.error('error adding new route', error.message);
