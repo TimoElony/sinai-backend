@@ -34,8 +34,8 @@ router.post("/new", verifySupabaseToken, async (req,res) => {
             [name, grade, bolts, length, info, area, crag, setters, grade, req.user.id]
         );
         const logEntry = await pool.query(
-            "INSERT INTO change_logs (user_id, action, route_id) VALUES ($1, $2, $3)",
-            [req.user.email, 'Created new route', name]
+            "INSERT INTO change_logs (user_id, action) VALUES ($1, $2)",
+            [req.user.email, 'Created new route'+name]
         );
         res.json(newRoute.rows);
     } catch (error) {
